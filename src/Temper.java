@@ -2,7 +2,6 @@ public class Temper {
 
     private String name;
     private int health;
-    private int attack;
     private int gold;
     private int agility;
     private int xp;
@@ -10,10 +9,9 @@ public class Temper {
 
 
 
-    public Temper(String name, int health, int attack,int gold, int agility, int xp) {
+    public Temper(String name, int health,int gold, int agility, int xp, int strength) {
         this.name = name;
         this.health = health;
-        this.attack =attack;
         this.gold = gold;
         this.agility = agility;
         this.xp = xp;
@@ -36,9 +34,7 @@ public class Temper {
         this.health = health;
     }
 
-    public int getAttack() {
-        return attack;
-    }
+
     public void takeDamage(int damage) {
         health -=damage;
         if (health < 0) {
@@ -67,7 +63,7 @@ public class Temper {
     }
 
     public void setXp(int xp) {
-        this.xp = xp;
+        this.xp += xp;
     }
 
     public int getStrength() {

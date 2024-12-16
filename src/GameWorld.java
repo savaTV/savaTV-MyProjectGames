@@ -1,3 +1,5 @@
+import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.SortedMap;
@@ -19,7 +21,7 @@ public class GameWorld {
     public void heroName() {
         System.out.println("Введите имя героя!");
         String name = scanner.nextLine();
-        heroes = new Heroes(name, 100, 12, 30, 10, 0);
+        heroes = new Heroes(name, 100, 0, 20, 0,15);
 
 
     }
@@ -40,6 +42,7 @@ public class GameWorld {
                 break;
             case 2:
                 System.out.println("Заглянуть к торговцу");
+                visitMerchant();
                 break;
             case 3:
                 System.out.println("Выйти из игры");
@@ -47,6 +50,24 @@ public class GameWorld {
             default:
                 System.out.println("Неверное действие повторите еще раз");
         }
+    }
+
+    private void visitMerchant() throws InterruptedException {
+        Merchant merchant = new Merchant();
+        System.out.println("Вы пришли к торговцу");
+        System.out.println("У вас " + heroes.getGold() + " золота");
+        System.out.println("Цена зелья силы " + merchant.getPotionPrice() + " золота.");
+        System.out.println("Хотите купит зелье силы? (1: ДА, 2: Нет)");
+        int choice = scanner.nextInt();
+
+        if (choice == 1) {
+            merchant.sellPotion(heroes);
+            visitMerchant();
+        }else {
+            System.out.println("Уйти от торговца");
+            startGame();
+        }
+
     }
 
     private void selectBattleMode() throws InterruptedException {
@@ -58,18 +79,17 @@ public class GameWorld {
         if (battleMode == 1 || battleMode == 2) {
             theFight(battleMode == 1);
         } else {
-            System.out.println("неверный выбор, попробуй снова");
+            System.out.println("Неверный выбор, попробуй снова");
         }
     }
 
 
+
     public void theFight(boolean isAutomatic) throws InterruptedException {
         boolean fight = random.nextBoolean();
-        System.out.println(" вы сражаетесь с" + (fight ? goblin.getName() : skelet.getName()));
-        Thread.sleep(2000);
+        System.out.println("Вы сражаетесь с " + (fight ? goblin.getName() : skelet.getName()));
         System.out.println("Битва началась");
-        Thread.sleep(1000);
-        //пауза перед началом битвы.
+
 
         // бой
         while (heroes.getHealth() > 0 && (fight ? goblin.getHealth() > 0 : skelet.getHealth() > 0)) {
@@ -80,21 +100,47 @@ public class GameWorld {
             }
         }
         if (heroes.getHealth() > 0) {
+            System.out.println("Победа");
+            heroReward(fight);
             choiceAfterFight();
+
+
+        }else {
+            System.out.println("Поражение");
+        }
+    }
+    private void heroReward(boolean fight){
+        if (fight) {
+            heroes.setGold((goblin.getGold()));
+            heroes.setXp(goblin.getXp());
+            System.out.println(heroes.getName() + " Получает " + goblin.getGold() + " Золота и " + goblin.getXp() + " Опыта");
+        }else {
+            heroes.setGold((skelet.getGold()));
+            heroes.setXp(skelet.getXp());
+            System.out.println(heroes.getName() + " Получает " + skelet.getGold() + " Золота и " + skelet.getXp() + " Опыта");
         }
     }
 
-    private void automaticBattle(boolean fight) {
+    private void automaticBattle(boolean fight) throws InterruptedException {
         int damage = attack(fight);
         if (damage > 0) {
             if (fight) {
                 goblin.takeDamage(damage);
                 System.out.println(goblin.getName() + " Получил урон. Осталось здоровья " + goblin.getHealth());
+                if (goblin.getHealth() <= 0) {
+                    System.out.println(goblin.getName() + " повержен");
+                    return;
+                }
             } else {
                 skelet.takeDamage(damage);
                 System.out.println(skelet.getName() + " Получил урон. Осталось здоровья " + skelet.getHealth());
+            }if (skelet.getHealth() <= 0) {
+                System.out.println(skelet.getName() + " повержен");
+                return;
             }
         }
+
+        Thread.sleep(2000);
         if (fight) {
             enemyAttack(goblin);
         } else {
@@ -102,7 +148,7 @@ public class GameWorld {
         }
     }
 
-    private void manualBattle(boolean fight) {
+    private void manualBattle(boolean fight) throws InterruptedException {
         System.out.println("Ваш ход! Выберите действие:");
         System.out.println("1: Атаковать");
         System.out.println("2: Уйти в город");
@@ -111,14 +157,21 @@ public class GameWorld {
         if (choiceAction == 1) {
             int damage = attack(fight);
             if (damage > 0) {
-                if (fight) {
-                    goblin.takeDamage(damage);
-                    System.out.println(goblin.getName() + " Получил урон. Осталось здоровья " + goblin.getHealth());
-                } else {
-                    skelet.takeDamage(damage);
-                    System.out.println(skelet.getName() + " Получил урон. Осталось здоровья " + skelet.getHealth());
+                goblin.takeDamage(damage);
+                System.out.println(goblin.getName() + " Получил урон. Осталось здоровья " + goblin.getHealth());
+                if (goblin.getHealth() <= 0) {
+                    System.out.println(goblin.getName() + " повержен");
+                    return;
                 }
+            } else {
+                skelet.takeDamage(damage);
+                System.out.println(skelet.getName() + " Получил урон. Осталось здоровья " + skelet.getHealth());
+            }if (skelet.getHealth() <= 0) {
+                System.out.println(skelet.getName() + " повержен");
+                return;
             }
+            Thread.sleep(2000);
+
             enemyAttack(fight ? goblin : skelet);
         } else if (choiceAction == 2) {
             System.out.println("Вы ушли в город.");
@@ -130,11 +183,11 @@ public class GameWorld {
     private int attack(boolean fight) {
         int damage = 0;
         if (random.nextInt(100) < heroes.getAgility() * 3) {
-            damage = heroes.getAttack();
+            damage = heroes.getStrength();
             if (random.nextInt(100) < 20) {
                 System.out.println("Критичиский удар " + damage);
             } else {
-                System.out.println("Урон: " + damage);
+                System.out.println(heroes.getName() + " Нанес" + " Урон: " + damage + " Здоровье " + heroes.getHealth());
                 }
             } else {
                 System.out.println(heroes.getName() + " промахнулся!");
@@ -144,8 +197,8 @@ public class GameWorld {
 
 
     private void enemyAttack(Temper enemy) {
-        if (random.nextInt(100) < enemy.getAttack() * 3) {
-            int damage = enemy.getAttack();
+        if (random.nextInt(100) < enemy.getStrength() * 3) {
+            int damage = enemy.getStrength();
             heroes.takeDamage(damage);
             System.out.println(heroes.getName() + " получил урон от " + enemy.getName() + ". Осталось здоровья: " + heroes.getHealth());
         } else {
@@ -161,6 +214,7 @@ public class GameWorld {
             startGame();
         } else {
             System.out.println("Вы остаетесь на поле битвы");
+            selectBattleMode();
         }
     }
 }
