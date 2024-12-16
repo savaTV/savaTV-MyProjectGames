@@ -9,6 +9,7 @@ public class Temper {
     private int strength;
 
 
+
     public Temper(String name, int health, int attack,int gold, int agility, int xp) {
         this.name = name;
         this.health = health;
