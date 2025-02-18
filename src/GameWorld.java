@@ -115,7 +115,6 @@ public class GameWorld {
                 System.out.println("Ваш инвентарь:");
                 System.out.println("Выберите зелье:");
                 usePotionInBattle();
-                selectPotion();
 
                 break;
             case 3:
