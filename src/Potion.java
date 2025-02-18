@@ -1,29 +1,19 @@
-public class Potion {
+abstract class Potion{
     private String name;
-    private int strengthBoost;
+    private int duration;
 
-    public Potion(String name, int strengthBoost) {
+    public Potion (String name, int duration) {
         this.name = name;
-        this.strengthBoost = strengthBoost;
+        this.duration = duration;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public int getDuration() {
+        return duration;
     }
-
-    public int getStrengthBoost() {
-        return strengthBoost;
-    }
-
-    public void setStrengthBoost(int strengthBoost) {
-        this.strengthBoost = strengthBoost;
-    }
-    public void use(Heroes hero) {
-        System.out.println(hero.getName() + " использует " + name +" и получает " + strengthBoost + "к силе");
-        hero.setStrength(hero.getStrength() + strengthBoost);
-    }
+    public abstract void applyEffect(Heroes heroes);// применение эффетка
+    public abstract void removeEffect(Heroes heroes);// отмена эффекта
 }

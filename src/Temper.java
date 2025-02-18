@@ -6,7 +6,7 @@ public class Temper {
     private int agility;
     private int xp;
     private int strength;
-
+    private int maxHealth;
 
 
     public Temper(String name, int health,int gold, int agility, int xp, int strength) {
@@ -17,6 +17,7 @@ public class Temper {
         this.xp = xp;
         this.strength = strength;
     }
+
 
     public String getName() {
         return name;
@@ -84,6 +85,10 @@ public class Temper {
                 ", xp=" + xp +
                 ", strength=" + strength +
                 '}';
+    }
+
+    public int getMaxHealth() {
+        return maxHealth;
     }
 }
 
