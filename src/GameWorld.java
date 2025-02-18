@@ -112,8 +112,6 @@ public class GameWorld {
                 heroAttack(getEnemy(fight));
                 break;
             case 2:
-                System.out.println("Ваш инвентарь:");
-                System.out.println("Выберите зелье:");
                 usePotionInBattle();
 
                 break;
